@@ -1,0 +1,5 @@
+{
+  "name": "PromptArchitect",
+  "description": "A professional, structured character setting and prompt generation tool for AI artists. Manage multi-character profiles, organize prompts by specific fields, manage variants, and translate inputs using OpenAI.",
+  "requestFramePermissions": []
+}
