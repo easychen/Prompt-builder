@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { AppProvider } from './context/AppContext';
 import { Layout } from './components/Layout';
 import { CharacterGrid } from './components/CharacterGrid';
@@ -9,22 +10,23 @@ import { Toaster } from './components/ui/Toaster';
 import { MessageSquare } from 'lucide-react';
 
 const App: React.FC = () => {
+  const { t } = useTranslation();
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isSuggestionsOpen, setIsSuggestionsOpen] = useState(false);
 
   return (
     <AppProvider>
-      <Layout 
+      <Layout
         onOpenSettings={() => setIsSettingsOpen(true)}
         extraAction={
-          <button 
+          <button
             onClick={() => setIsSuggestionsOpen(!isSuggestionsOpen)}
             className={`p-2 rounded-md transition-colors ${
-              isSuggestionsOpen 
-                ? 'bg-primary/20 text-primary' 
+              isSuggestionsOpen
+                ? 'bg-primary/20 text-primary'
                 : 'hover:bg-surfaceHighlight text-textMuted hover:text-textMain'
             }`}
-            title="修改建议"
+            title={t('modificationSuggestions')}
           >
             <MessageSquare className="w-5 h-5" />
           </button>
@@ -41,7 +43,7 @@ const App: React.FC = () => {
                 <div className="sticky top-0 bg-background pb-4 mb-4 border-b border-border">
                   <h2 className="font-bold text-lg flex items-center gap-2">
                     <MessageSquare className="w-5 h-5 text-primary" />
-                    修改建议
+                    {t('modificationSuggestions')}
                   </h2>
                 </div>
                 <ModificationSuggestionsList />
@@ -50,7 +52,7 @@ const App: React.FC = () => {
           </div>
         </div>
       </Layout>
-      
+
       {isSettingsOpen && (
         <SettingsModal onClose={() => setIsSettingsOpen(false)} />
       )}

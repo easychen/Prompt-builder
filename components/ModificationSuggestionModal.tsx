@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useApp } from '../context/AppContext';
 import { Button } from './ui/Button';
 import { MessageSquare, Send, X, Check, Clock, Loader2 } from 'lucide-react';
@@ -14,17 +15,20 @@ interface ModificationSuggestionModalProps {
 export const ModificationSuggestionModal: React.FC<ModificationSuggestionModalProps> = ({
   characterId,
   fieldId,
-  fieldLabel = '角色',
+  fieldLabel,
   currentValue = '',
   onClose
 }) => {
+  const { t } = useTranslation();
   const { processModificationWithAI, isProcessingAI } = useApp();
   const [suggestion, setSuggestion] = useState('');
   const [description, setDescription] = useState('');
 
+  const defaultFieldLabel = t('character');
+
   const handleSubmit = async () => {
     if (!suggestion.trim()) return;
-    
+
     try {
       await processModificationWithAI(
         characterId,
@@ -35,7 +39,7 @@ export const ModificationSuggestionModal: React.FC<ModificationSuggestionModalPr
       onClose();
     } catch (error: any) {
       console.error('Failed to process suggestion:', error);
-      alert(`处理失败: ${error.message}`);
+      alert(t('processingFailed', { message: error.message }));
     }
   };
 
@@ -46,7 +50,7 @@ export const ModificationSuggestionModal: React.FC<ModificationSuggestionModalPr
           <div className="flex items-center gap-2">
             <MessageSquare className="w-5 h-5 text-primary" />
             <h3 className="text-lg font-semibold text-textMain">
-              提交修改建议
+              {t('submitModificationSuggestion')}
             </h3>
           </div>
           <button
@@ -61,48 +65,48 @@ export const ModificationSuggestionModal: React.FC<ModificationSuggestionModalPr
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-textMuted mb-2">
-              修改对象
+              {t('modificationTarget')}
             </label>
             <div className="text-sm text-textMain bg-surfaceHighlight/10 p-2 rounded border border-border">
-              {fieldLabel}
+              {fieldLabel || defaultFieldLabel}
             </div>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-textMuted mb-2">
-              当前值
+              {t('currentValue')}
             </label>
             <div className="text-sm text-textMain bg-surfaceHighlight/5 p-2 rounded border border-border break-all">
-              {currentValue || '(空)'}
+              {currentValue || t('empty')}
             </div>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-textMuted mb-2">
-              修改建议 <span className="text-red-500">*</span>
+              {t('modificationSuggestion')} <span className="text-red-500">*</span>
             </label>
             <textarea
               value={suggestion}
               onChange={(e) => setSuggestion(e.target.value)}
               disabled={isProcessingAI}
               className="w-full min-h-[100px] bg-background border border-border rounded p-3 text-sm focus:ring-1 focus:ring-primary focus:outline-none resize-none disabled:opacity-50"
-              placeholder="例如：把发色改成金色，增加一些卷曲度..."
+              placeholder={t('changeHairColorExample')}
             />
             <p className="text-xs text-textMuted mt-1">
-              AI 将根据你的建议自动生成并更新相关字段
+              {t('aiWillAutoGenerateFields')}
             </p>
           </div>
 
           <div>
             <label className="block text-sm font-medium text-textMuted mb-2">
-              补充说明
+              {t('additionalInformation')}
             </label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               disabled={isProcessingAI}
               className="w-full min-h-[80px] bg-background border border-border rounded p-3 text-sm focus:ring-1 focus:ring-primary focus:outline-none resize-none disabled:opacity-50"
-              placeholder="其他补充说明（可选）..."
+              placeholder={t('optionalAdditionalInformation')}
             />
           </div>
         </div>
@@ -114,7 +118,7 @@ export const ModificationSuggestionModal: React.FC<ModificationSuggestionModalPr
             className="flex-1"
             disabled={isProcessingAI}
           >
-            取消
+            {t('cancel')}
           </Button>
           <Button
             variant="primary"
@@ -125,12 +129,12 @@ export const ModificationSuggestionModal: React.FC<ModificationSuggestionModalPr
             {isProcessingAI ? (
               <>
                 <Loader2 className="w-4 h-4 animate-spin" />
-                AI处理中...
+                {t('aiProcessing')}
               </>
             ) : (
               <>
                 <Send className="w-4 h-4" />
-                提交给AI
+                {t('submitToAI')}
               </>
             )}
           </Button>

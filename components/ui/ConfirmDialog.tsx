@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Button } from './Button';
 import { X } from 'lucide-react';
 
@@ -11,6 +12,7 @@ interface ConfirmDialogProps {
 }
 
 export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({ isOpen, title, message, onConfirm, onCancel }) => {
+  const { t } = useTranslation();
   if (!isOpen) return null;
 
   return (
@@ -19,8 +21,8 @@ export const ConfirmDialog: React.FC<ConfirmDialogProps> = ({ isOpen, title, mes
         <h3 className="text-lg font-semibold text-textMain">{title}</h3>
         <p className="text-sm text-textMuted">{message}</p>
         <div className="flex justify-end gap-2">
-          <Button variant="secondary" onClick={onCancel}>取消</Button>
-          <Button variant="danger" onClick={onConfirm}>确认删除</Button>
+          <Button variant="secondary" onClick={onCancel}>{t('cancel')}</Button>
+          <Button variant="danger" onClick={onConfirm}>{t('confirmDelete')}</Button>
         </div>
       </div>
     </div>

@@ -1,17 +1,19 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useApp } from '../context/AppContext';
 import { Button } from './ui/Button';
 import { MessageSquare, Check, Clock, Trash2, ChevronRight } from 'lucide-react';
 import { FLATTENED_FIELDS } from '../constants';
 
 export const ModificationSuggestionsList: React.FC = () => {
+  const { t, i18n } = useTranslation();
   const { modifications, characters, removeModification } = useApp();
 
   if (!modifications || modifications.length === 0) {
     return (
       <div className="text-center py-8 text-textMuted">
         <MessageSquare className="w-12 h-12 mx-auto mb-3 opacity-50" />
-        <p>暂无修改建议</p>
+        <p>{t('noModificationSuggestionsYet')}</p>
       </div>
     );
   }
@@ -22,11 +24,11 @@ export const ModificationSuggestionsList: React.FC = () => {
 
   const getCharacterName = (charId: string) => {
     const char = characters.find(c => c.id === charId);
-    return char?.name || '未知角色';
+    return char?.name || t('unknownCharacter');
   };
 
   const getFieldLabel = (fieldId: string | null) => {
-    if (!fieldId) return '整体修改';
+    if (!fieldId) return t('overallModification');
     const field = FLATTENED_FIELDS.find(f => f.id === fieldId);
     return field?.label || fieldId;
   };
@@ -39,11 +41,11 @@ export const ModificationSuggestionsList: React.FC = () => {
     const diffHours = Math.floor(diffMs / 3600000);
     const diffDays = Math.floor(diffMs / 86400000);
 
-    if (diffMins < 1) return '刚刚';
-    if (diffMins < 60) return `${diffMins}分钟前`;
-    if (diffHours < 24) return `${diffHours}小时前`;
-    if (diffDays < 7) return `${diffDays}天前`;
-    return date.toLocaleDateString('zh-CN');
+    if (diffMins < 1) return t('justNow');
+    if (diffMins < 60) return t('minutesAgo', { count: diffMins });
+    if (diffHours < 24) return t('hoursAgo', { count: diffHours });
+    if (diffDays < 7) return t('daysAgo', { count: diffDays });
+    return date.toLocaleDateString(i18n.language);
   };
 
   return (
@@ -65,7 +67,7 @@ export const ModificationSuggestionsList: React.FC = () => {
                 {mod.applied && (
                   <div className="flex items-center gap-1 text-xs text-green-600">
                     <Check className="w-3 h-3" />
-                    <span>已应用</span>
+                    <span>{t('applied')}</span>
                   </div>
                 )}
               </div>
@@ -80,18 +82,18 @@ export const ModificationSuggestionsList: React.FC = () => {
 
               {!mod.fieldId && mod.newValue === 'Multiple fields updated' ? (
                 <div className="text-xs text-textMuted bg-surfaceHighlight/10 px-2 py-1 rounded mb-2">
-                  AI已根据建议更新了多个字段
+                  {t('aiUpdatedMultipleFields')}
                 </div>
               ) : (
                 <div className="space-y-2 mb-2">
                   <div className="flex items-start gap-2">
-                    <span className="text-xs text-textMuted shrink-0 mt-1">原值:</span>
+                    <span className="text-xs text-textMuted shrink-0 mt-1">{t('oldValue')}</span>
                     <div className="flex-1 text-xs bg-red-50 text-red-700 px-2 py-1 rounded break-all">
-                      {mod.oldValue || '(空)'}
+                      {mod.oldValue || t('empty')}
                     </div>
                   </div>
                   <div className="flex items-start gap-2">
-                    <span className="text-xs text-textMuted shrink-0 mt-1">新值:</span>
+                    <span className="text-xs text-textMuted shrink-0 mt-1">{t('newValue')}</span>
                     <div className="flex-1 text-xs bg-green-50 text-green-700 px-2 py-1 rounded break-all">
                       {mod.newValue}
                     </div>
@@ -101,7 +103,7 @@ export const ModificationSuggestionsList: React.FC = () => {
 
               {mod.description && (
                 <div className="text-xs text-textMuted bg-surfaceHighlight/10 px-2 py-1 rounded">
-                  <span className="font-medium">用户建议:</span> {mod.description}
+                  <span className="font-medium">{t('userSuggestion')}</span> {mod.description}
                 </div>
               )}
             </div>
@@ -112,7 +114,7 @@ export const ModificationSuggestionsList: React.FC = () => {
                 variant="secondary"
                 onClick={() => removeModification(mod.id)}
                 className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                title="删除记录"
+                title={t('deleteRecord')}
               >
                 <Trash2 className="w-3 h-3" />
               </Button>

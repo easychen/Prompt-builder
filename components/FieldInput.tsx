@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FieldValue, TemplateField } from '../types';
 import { useApp } from '../context/AppContext';
 import { ArrowRightLeft, Plus, X, MessageSquare } from 'lucide-react';
@@ -11,6 +12,7 @@ interface FieldInputProps {
 }
 
 export const FieldInput: React.FC<FieldInputProps> = ({ characterId, field, value }) => {
+  const { t } = useTranslation();
   const { updateCharacterField, addVariant, removeVariant, swapVariant } = useApp();
   const [newVariant, setNewVariant] = useState("");
   const [showModModal, setShowModModal] = useState(false);
@@ -31,18 +33,18 @@ export const FieldInput: React.FC<FieldInputProps> = ({ characterId, field, valu
       <div className="flex flex-col gap-2">
         <div className="relative group/input">
           <div className="flex items-start gap-1">
-            <textarea 
+            <textarea
               className="flex-1 min-h-[42px] bg-surface border border-border rounded-md py-2 px-2 text-sm focus:ring-1 focus:ring-primary focus:border-primary focus:outline-none resize-none overflow-hidden"
               placeholder={field.placeholder}
               value={currentValue}
               onChange={(e) => updateCharacterField(characterId, field.id, e.target.value)}
-              rows={Math.max(1, Math.ceil(currentValue.length / 30))} 
+              rows={Math.max(1, Math.ceil(currentValue.length / 30))}
               style={{ height: 'auto' }}
             />
             <button
               onClick={() => setShowModModal(true)}
               className="mt-1 p-1.5 text-textMuted hover:text-primary hover:bg-primary/10 rounded-md transition-colors shrink-0"
-              title="提交修改建议"
+              title={t('submitModificationSuggestion')}
             >
               <MessageSquare className="w-4 h-4" />
             </button>
@@ -59,10 +61,10 @@ export const FieldInput: React.FC<FieldInputProps> = ({ characterId, field, valu
           <div className="flex flex-col gap-1">
               {variants.map((v, idx) => (
                   <div key={idx} className="group flex items-center justify-between gap-2 text-xs bg-surfaceHighlight/20 rounded px-2 py-1 border border-transparent hover:border-border/50">
-                      <span 
+                      <span
                           className="truncate cursor-pointer flex-1 text-textMuted hover:text-textMain"
                           onClick={() => swapVariant(characterId, field.id, idx)}
-                          title="点击替换当前值"
+                          title={t('clickToReplaceCurrentValue')}
                       >
                           {v}
                       </span>
@@ -74,15 +76,15 @@ export const FieldInput: React.FC<FieldInputProps> = ({ characterId, field, valu
               ))}
           </div>
         )}
-        
+
         {/* Quick Add Variant */}
         <div className="flex items-center gap-1 mt-1 opacity-50 hover:opacity-100 transition-opacity">
-               <input 
-                  type="text" 
+               <input
+                  type="text"
                   value={newVariant}
                   onChange={(e) => setNewVariant(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleAddVariant()}
-                  placeholder="添加备选..."
+                  placeholder={t('addVariant')}
                   className="flex-1 bg-transparent border-b border-border text-[10px] focus:outline-none focus:border-primary px-1 py-0.5"
                />
                <button onClick={handleAddVariant} disabled={!newVariant} className="text-textMuted hover:text-primary disabled:opacity-30">
