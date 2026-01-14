@@ -1,6 +1,5 @@
-<div align="center">
-  [简体中文](README.zh.md)
-</div>
+ [简体中文](README.zh.md)
+ 
 <div align="center">
   <h1>🎨 PromptArchitect</h1>
   
