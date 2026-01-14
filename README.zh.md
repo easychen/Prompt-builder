@@ -1,6 +1,6 @@
-<div align="center">
-  [English](README.md)
-</div>
+[English](README.md)
+
+
 <div align="center">
   <h1>🎨 PromptArchitect - 提示词工程师</h1>
   
