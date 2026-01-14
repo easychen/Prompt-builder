@@ -7,20 +7,43 @@ import { Plus, Trash2, Copy, StickyNote, Languages, Loader2, Wand2, MessageSquar
 import { useToast } from './ui/Toaster';
 import { MagicFillModal } from './MagicFillModal';
 import { ConfirmDialog } from './ui/ConfirmDialog';
+import { CopyPromptDialog } from './ui/CopyPromptDialog';
 import { ModificationSuggestionModal } from './ModificationSuggestionModal';
 
 export const CharacterGrid: React.FC = () => {
-  const { characters, addCharacter, removeCharacter, updateCharacterName, duplicateCharacter, generatePrompt, updateCharacterNotes, translateCharacter } = useApp();
+  const { characters, addCharacter, removeCharacter, updateCharacterName, duplicateCharacter, generatePrompt, generatePositivePrompt, generateNegativePrompt, updateCharacterNotes, translateCharacter } = useApp();
   const { toast } = useToast();
   const [translatingId, setTranslatingId] = useState<string | null>(null);
   const [magicFillCharId, setMagicFillCharId] = useState<string | null>(null);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [modSuggestionCharId, setModSuggestionCharId] = useState<string | null>(null);
+  const [copyPromptCharId, setCopyPromptCharId] = useState<string | null>(null);
 
   const handleCopyPrompt = (charId: string) => {
-    const prompt = generatePrompt(charId);
+    setCopyPromptCharId(charId);
+  };
+
+  const handleCopyAll = () => {
+    if (!copyPromptCharId) return;
+    const prompt = generatePrompt(copyPromptCharId);
     navigator.clipboard.writeText(prompt);
     toast("提示词已复制到剪贴板！");
+    setCopyPromptCharId(null);
+  };
+
+  const handleCopyPositive = () => {
+    if (!copyPromptCharId) return;
+    const prompt = generatePositivePrompt(copyPromptCharId);
+    navigator.clipboard.writeText(prompt);
+    toast("正面提示词已复制到剪贴板！");
+    setCopyPromptCharId(null);
+  };
+
+  const handleCopyNegative = () => {
+    const prompt = generateNegativePrompt();
+    navigator.clipboard.writeText(prompt);
+    toast("负面提示词已复制到剪贴板！");
+    setCopyPromptCharId(null);
   };
 
   const handleCopyTag = (tag: string) => {
@@ -210,7 +233,7 @@ export const CharacterGrid: React.FC = () => {
         />
       )}
 
-      <ConfirmDialog 
+      <ConfirmDialog
         isOpen={!!deleteConfirmId}
         title="删除角色"
         message="确定要删除这个角色吗？此操作无法撤销。"
@@ -219,6 +242,14 @@ export const CharacterGrid: React.FC = () => {
             setDeleteConfirmId(null);
         }}
         onCancel={() => setDeleteConfirmId(null)}
+      />
+
+      <CopyPromptDialog
+        isOpen={!!copyPromptCharId}
+        onCopyAll={handleCopyAll}
+        onCopyPositive={handleCopyPositive}
+        onCopyNegative={handleCopyNegative}
+        onCancel={() => setCopyPromptCharId(null)}
       />
     </>
   );

@@ -17,6 +17,8 @@ interface AppContextType extends AppState {
   translateCharacter: (charId: string) => Promise<void>;
   autoFillCharacter: (charId: string, prompt: string, imageBase64: string | null) => Promise<void>;
   generatePrompt: (charId: string) => string;
+  generatePositivePrompt: (charId: string) => string;
+  generateNegativePrompt: () => string;
   duplicateCharacter: (charId: string) => void;
   modifications: ModificationSuggestion[];
   addModification: (charId: string, fieldId: string | null, oldValue: string, newValue: string, description: string) => void;
@@ -324,6 +326,30 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     return fullPrompt;
   };
 
+  const generatePositivePrompt = (charId: string): string => {
+    const char = state.characters.find(c => c.id === charId);
+    if (!char) return "";
+
+    const positiveParts = [state.globalPrompts.positive];
+    
+    FLATTENED_FIELDS.forEach(field => {
+      const val = char.fields[field.id]?.value;
+      if (val?.trim()) {
+        positiveParts.push(val.trim());
+      }
+    });
+
+    if (char.notes.trim()) {
+      positiveParts.push(char.notes.replace(/\n/g, ', '));
+    }
+
+    return positiveParts.filter(Boolean).join(', ');
+  };
+
+  const generateNegativePrompt = (): string => {
+    return state.globalPrompts.negative.trim();
+  };
+
   const addModification = (charId: string, fieldId: string | null, oldValue: string, newValue: string, description: string) => {
     const modification: ModificationSuggestion = {
       id: `mod_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -487,6 +513,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       translateCharacter,
       autoFillCharacter,
       generatePrompt,
+      generatePositivePrompt,
+      generateNegativePrompt,
       duplicateCharacter,
       modifications: state.modifications || [],
       addModification,
